@@ -208,6 +208,56 @@ program is executable.
 
 ## Creating an account to store state
 
+The function `create_greeting_account` in `client/src/client.rs`
+handles the creation of an account to store program state in. This is
+the most complicated part of our client program as the address of the
+account must be derived from the payer's public key, the program's
+public key, and a seed phrase.
+
+The reason that we derive the address of the storage account like this
+is so that it can be located later without storing any state across
+invocations of the client. Solana supports this method of account
+creation with the `create_account_with_seed` system instruction.
+
+Arguments to this instruction are poorly documented and different
+across the Typescript and Rust SDKs. Here are what they are and their
+meanings in the Rust SDK:
+
+- `from_pubkey` the public key of the creator of the new account. In
+  our case this is the payer's public key.
+- `to_pubkey` the public key that the generated account will have. In
+  our case this is the public key that we generate.
+- `base` the payer's public key as it is the "base" in the derivation
+  of the generated account's public key. The other ingredients being
+  the program's public key and the seed phrase.
+- `seed` the seed phrase that was used in the generation of the
+  generated account's public key.
+- `lamports` the number of lamports to send to the generated
+  account. In our case this is equal to the amount of lamports
+  required to live on the chain rent free.
+- `space` the size of the data that will be stored in the generated
+  account.
+- `owner` the owner of the generated account. In our case this is the
+  program's public key.
+
+You may ask yourself after reading this why we need to both provide
+all of the ingredients needed to generate the new accounts public key
+(also called its address) and the public key that we have generated
+with those ingredients. The Solana source code seems to suggest that
+this is some method for error checking but it seems slightly shitty to
+me.
+
 ## Sending the "hello" transaction
 
+Sending the hello transaction to the program is actually the easy
+part. It is done in the `say_hello` function in
+`client/src/client.rs`. This function just creates a new instruction
+with the generated storage account as an argument and sends it to the
+program that we deployed.
+
 ## Querying the account that stores state
+
+We can query the state of our generated account and thus determine the
+output of our program using the `get_account` method on our
+connection. This is done in the `count_greetings` function in
+`client/src/client.rs`.
