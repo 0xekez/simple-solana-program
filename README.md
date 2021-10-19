@@ -4,10 +4,9 @@ This is a better, Rust version of Solana's
 [example-helloworld](https://github.com/solana-labs/example-helloworld/tree/master/src/client)
 client program.
 
-The client program that Solana uses by default is written in
-TypeScript and uses a massive amount of global state. This makes the
-code effectively unreadable even if the README in that repository
-actually has a good high level explainer of what is going on.
+I made this because I felt as if the provided client implementation in
+TypeScript lacked some detail in its comments and used too much global
+state.
 
 To use this client start by following the instructions in
 example-helloworld to configure Solana on your machine and deploy the
@@ -17,7 +16,7 @@ program keypair>`.
 
 The program is likely stored in a path similar to this one:
 
-````
+```
 /home/admin/projects/solana/example-helloworld/dist/program/helloworld-keypair.json
 ```
 
