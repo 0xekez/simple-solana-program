@@ -1,6 +1,16 @@
 use zeke_contract as zc;
 
 fn main() {
+    let args = std::env::args().collect::<Vec<_>>();
+    if args.len() != 2 {
+        eprintln!(
+            "usage: {} <path to solana hello world example program keypair>",
+            args[0]
+        );
+        std::process::exit(-1);
+    }
+    let keypair_path = &args[1];
+
     let connection = zc::client::establish_connection().unwrap();
     println!(
         "Connected to remote solana node running version ({}).",
@@ -13,7 +23,7 @@ fn main() {
         balance_requirement
     );
 
-    let player = zc::utils::get_payer().unwrap();
+    let player = zc::utils::get_player().unwrap();
     let player_balance = zc::client::get_player_balance(&player, &connection).unwrap();
     println!("({}) lamports are owned by player.", player_balance);
 
@@ -26,8 +36,13 @@ fn main() {
         zc::client::request_airdrop(&player, &connection, request).unwrap();
     }
 
-    // TODO:
-    //   1. Check that the progra exists
-    //   2. Send a transaction to the program
-    //   3. Query the program's account for the result of the transaction.
+    let program = zc::client::get_program(keypair_path, &connection).unwrap();
+
+    zc::client::create_greeting_account(&player, &program, &connection).unwrap();
+
+    zc::client::say_hello(&player, &program, &connection).unwrap();
+    println!(
+        "({}) greetings have been sent.",
+        zc::client::count_greetings(&player, &program, &connection).unwrap()
+    )
 }

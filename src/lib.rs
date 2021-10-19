@@ -17,6 +17,9 @@ pub enum Error {
 
     #[error("solana client error: ({0})")]
     ClientError(#[from] solana_client::client_error::ClientError),
+
+    #[error("error in public key derivation: ({0})")]
+    KeyDerivationError(#[from] solana_sdk::pubkey::PubkeyError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
